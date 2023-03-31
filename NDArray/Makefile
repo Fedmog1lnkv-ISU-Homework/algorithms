@@ -1,9 +1,7 @@
 CC = g++
 CFLAGS = -std=c++20 -Wall -pedantic
-#SOURCES = main.cpp
 SOURCES = main.cpp
 CLASS = NDArray.h
-CLASS_SOURCE = NDArray.cpp
 
 ifeq ($(OS), Windows_NT)
 	RM = del
@@ -14,8 +12,7 @@ else
 endif
 
 all:
-	$(CC) $(CFLAGS) $(CLASS) -o $(TARGET) $(SOURCES)  $(CLASS_SOURCE)
-
+	$(CC) $(CFLAGS) $(CLASS) -o $(TARGET) $(SOURCES)
 clean:
 	echo $(OS)
 	$(RM) $(TARGET)
