@@ -313,3 +313,4 @@ poetry.toml
 
 # ruff
 .ruff_cache/
+.vscode/
