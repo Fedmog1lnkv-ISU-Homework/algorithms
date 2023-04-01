@@ -7,6 +7,7 @@
 #include <vector>
 #include <numeric>
 #include <utility>
+#include <cassert>
 
 template <typename T>
 class NDArray
@@ -214,6 +215,163 @@ public:
         }
 
         return transposed_array;
+    }
+
+    // Поиск минимального значения
+    // -1 - весь массив
+    // 0 - по столбцам
+    // 1 - по строкам
+    std::vector<T> min(int axis = -1)
+    {
+        if (axis == -1)
+        {
+            return {find_min(data)};
+        }
+        else if (axis == 0)
+        {
+            std::vector<T> mins;
+            for (int j = 0; j < shape[1]; j++)
+            {
+                std::vector<int> col;
+
+                for (int i = 0; i < shape[0]; i++)
+                {
+                    int index = i * shape[1] + j;
+                    col.push_back(data[index]);
+                }
+                mins.push_back(find_min(col));
+            }
+            return mins;
+        }
+        else if (axis == 1)
+        {
+            std::vector<T> mins;
+            for (int i = 0; i < shape[0]; i++)
+            {
+                int row_start = i * shape[1];
+                std::vector<int> row(data.begin() + row_start, data.begin() + row_start + shape[1]);
+                mins.push_back(find_min(row));
+            }
+            return mins;
+        }
+        throw std::invalid_argument("Can only axis 0, 1");
+    }
+
+    // Поиск максимального значения
+    // -1 - весь массив
+    // 0 - по столбцам
+    // 1 - по строкам
+    std::vector<T> max(int axis = -1)
+    {
+        if (axis == -1)
+        {
+            return {find_max(data)};
+        }
+        else if (axis == 0)
+        {
+            std::vector<T> maxs;
+            for (int j = 0; j < shape[1]; j++)
+            {
+                std::vector<int> col;
+
+                for (int i = 0; i < shape[0]; i++)
+                {
+                    int index = i * shape[1] + j;
+                    col.push_back(data[index]);
+                }
+                maxs.push_back(find_max(col));
+            }
+            return maxs;
+        }
+        else if (axis == 1)
+        {
+            std::vector<T> maxs;
+            for (int i = 0; i < shape[0]; i++)
+            {
+                int row_start = i * shape[1];
+                std::vector<int> row(data.begin() + row_start, data.begin() + row_start + shape[1]);
+                maxs.push_back(find_max(row));
+            }
+            return maxs;
+        }
+        throw std::invalid_argument("Can only axis 0, 1");
+    }
+
+    // Поиск среднего значения
+    // -1 - весь массив
+    // 0 - по столбцам
+    // 1 - по строкам
+    std::vector<float> mean(int axis = -1)
+    {
+        if (axis == -1)
+        {
+            return {find_mean(data)};
+        }
+        else if (axis == 0)
+        {
+            std::vector<float> means;
+            for (int j = 0; j < shape[1]; j++)
+            {
+                std::vector<int> col;
+
+                for (int i = 0; i < shape[0]; i++)
+                {
+                    int index = i * shape[1] + j;
+                    col.push_back(data[index]);
+                }
+                means.push_back(find_mean(col));
+            }
+            return means;
+        }
+        else if (axis == 1)
+        {
+            std::vector<float> means;
+            for (int i = 0; i < shape[0]; i++)
+            {
+                int row_start = i * shape[1];
+                std::vector<int> row(data.begin() + row_start, data.begin() + row_start + shape[1]);
+                means.push_back(find_mean(row));
+            }
+            return means;
+        }
+        throw std::invalid_argument("Can only axis 0, 1");
+    }
+
+    // Вспомогательные функции для поиска min, max, mean в векторе
+    T find_min(std::vector<T> vec)
+    {
+        T min_val = vec[0];
+        for (int i = 1; i < static_cast<int>(vec.size()); i++)
+        {
+            if (vec[i] < min_val)
+            {
+                min_val = vec[i];
+            }
+        }
+        return min_val;
+    }
+
+    T find_max(std::vector<T> vec)
+    {
+        T max_val = vec[0];
+        for (int i = 1; i < static_cast<int>(vec.size()); i++)
+        {
+            if (vec[i] > max_val)
+            {
+                max_val = vec[i];
+            }
+        }
+        return max_val;
+    }
+
+    float find_mean(std::vector<T> vec)
+    {
+        float sum = 0;
+        for (int i = 0; i < static_cast<int>(vec.size()); i++)
+        {
+            sum += vec[i];
+        }
+        return sum / vec.size();
     }
 };
 

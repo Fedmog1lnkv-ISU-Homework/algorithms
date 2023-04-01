@@ -133,3 +133,43 @@ void setArrayElement()
     arr[{1, 2}] = 5.0;
     std::cout << arr << std::endl;
 }
+
+template <typename T>
+void print_vector(const std::vector<T> &vec)
+{
+    for (size_t i = 0; i < vec.size(); i++)
+    {
+        std::cout << vec[i] << " ";
+    }
+    std::cout << std::endl;
+}
+
+void findMinFullArray()
+{
+    auto arr = NDArray<int>::random({3, 4});
+    auto min_val = arr.min();
+    std::cout << arr << std::endl
+              << "Минимальное во всём массиве: ";
+    print_vector(min_val);
+    std::cout << std::endl;
+}
+
+void findMaxColumns()
+{
+    auto arr = NDArray<int>::random({3, 4});
+    auto max_val = arr.max(0);
+    std::cout << arr << std::endl
+              << "Максимальные в каждом столбце: ";
+    print_vector(max_val);
+    std::cout << std::endl;
+}
+
+void findMeanRows()
+{
+    auto arr = NDArray<int>::random({3, 4});
+    auto mean_val = arr.mean(1);
+    std::cout << arr << std::endl
+              << "Среднее в каждой строке: ";
+    print_vector(mean_val);
+    std::cout << std::endl;
+}

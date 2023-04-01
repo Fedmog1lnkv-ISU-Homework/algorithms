@@ -4,6 +4,7 @@
 
 int main()
 {
+
     defaultConstructor();
     zerosExample();
     onesExample();
@@ -17,5 +18,9 @@ int main()
     transposeExample();
     getArrayElement();
     setArrayElement();
+    findMinFullArray();
+    findMaxColumns();
+    findMeanRows();
+
     return 0;
 }
