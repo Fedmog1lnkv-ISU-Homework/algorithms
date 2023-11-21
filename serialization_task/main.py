@@ -1,5 +1,6 @@
 import struct
 from enum import Enum
+import json
 
 
 class Alignment(Enum):
@@ -17,7 +18,8 @@ class Widget():
             self.parent.add_children(self)
 
     def add_children(self, children: "Widget"):
-        self.childrens.append(children)
+        if children not in self.childrens:
+            self.childrens.append(children)
 
     def to_binary(self):
         class_name = self.__class__.__name__.encode()
@@ -77,6 +79,46 @@ class Widget():
 
         return root_element, current_pos + cursor
 
+    def to_json(self):
+        widget_dict = {
+            "class_name": self.__class__.__name__,
+            "children": [child.to_json() for child in self.childrens]
+        }
+
+        if isinstance(self, Layout):
+            widget_dict["alignment"] = self.alignment.name
+        elif isinstance(self, LineEdit):
+            widget_dict["max_length"] = self.max_length
+        elif isinstance(self, ComboBox):
+            widget_dict["items"] = self.items
+        elif isinstance(self, MainWindow):
+            widget_dict["title"] = self.title
+
+        return widget_dict
+
+    @classmethod
+    def from_json(cls, json_data, parent=None):
+        class_name = json_data["class_name"]
+        root_element = None
+
+        if class_name == "MainWindow":
+            root_element = cls(json_data["title"])
+        elif class_name == "Layout":
+            alignment = Alignment[json_data.get("alignment", "HORIZONTAL")]
+            root_element = Layout(parent, alignment)
+        elif class_name == "LineEdit":
+            max_length = json_data.get("max_length", 10)
+            root_element = LineEdit(parent, max_length)
+        elif class_name == "ComboBox":
+            items = json_data.get("items", [])
+            root_element = ComboBox(parent, items)
+
+        for child_data in json_data.get("children", []):
+            child_node = cls.from_json(child_data, parent=root_element)
+            root_element.add_children(child_node)
+
+        return root_element
+
     def __str__(self):
         return f"{self.__class__.__name__}{self.childrens}"
 
@@ -130,3 +172,13 @@ print(f"Binary data {bts}")
 
 new_app = MainWindow.from_binary(bts)
 print(new_app[0])
+
+app_json = app.to_json()
+app_json_str = json.dumps(app_json, indent=2)
+print(f"JSON representation:\n{app_json_str}")
+
+new_app_from_json = MainWindow.from_json(app_json)
+print(new_app_from_json)
+
+if str(app) == str(new_app_from_json):
+    print("Objects are equal")
